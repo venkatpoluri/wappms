@@ -6407,7 +6407,7 @@ myApp.controller("hungamaPromoPreviewController", function ($scope, $http) {
      
 
     $scope.pageCallBackApi = function () {
-        if (getQuerystringValueByName("typxm") == "hungamapromopreview") {
+        if (getQuerystringValueByName("typxm") == "hungamapromopreview1") {
           //  $('#langBlock').hide();
         }
     }
