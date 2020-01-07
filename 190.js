@@ -6487,7 +6487,7 @@ myApp.controller("hungamaPromoPreviewController", function ($scope, $http) {
             if (userid == undefined) userid = '1';
             if (userid == '!ENC_MOBNO!') userid = '1';
             if (userid == '') userid = '1';
-            var ci="554";
+            var ci="554q";
             var contentid = content;
             var url = 'https://imidigital.imimobile.co/commonapi/hungamastreaming.ashx?action=stream&cid=' + contentid + '&userid=' + userid + '&osid=' + osid + '&event=' + event + '&channel=wap&appid=mtn_afg';
             $http.get(url).then(function (resp) {
