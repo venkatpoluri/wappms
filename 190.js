@@ -1,4 +1,4 @@
-
+﻿
 function getQuerystringValueByName(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -6393,6 +6393,153 @@ myApp.controller("hungamaLatestController", function ($scope, $http) {
     $scope.openGenrePreviewPage = function (genreId) {
         window.location.href = "defaultx.aspx?qid="+getQuerystringValueByName("qid")+"&typxm=hungamagenre&lang=engl&stype="+genreId+"&be="+getQuerystringValueByName("typxm")+"";
     }
+
+    $scope.checkHideDiv = function (val, genreId) {
+        if (val.length > 0) { $('#hungamaVideosLatest' + genreId).show(); }
+        else { $('#hungamaV' + genreId).hide(); }
+    }
+});
+
+
+myApp.controller("hungamaPromoPreviewController", function ($scope, $http) {
+    $scope.dataTemp = []; $scope.addedGenreId = []; $scope.showViewAll = false;
+
+     
+
+    $scope.pageCallBackApi = function () {
+        if (getQuerystringValueByName("typxm") == "hungamapromopreview") {
+          //  $('#langBlock').hide();
+        }
+    }
+ 
+    $scope.playClip = function (content) {
+        $('#pageloader').show();
+        var event = $('#hdnevent_hungamavideos2').val();
+        if (event == undefined) event = '';
+        var osid = $('#hdnosid').val();
+        if (osid == undefined) osid = '0';
+        if (osid == '') osid = '0';
+        var userid = $('#hdnencmobno').val();
+        if (userid == undefined) userid = '1';
+        if (userid == '!ENC_MOBNO!') userid = '1';
+        if (userid == '') userid = '1';
+        var contentid = content;
+        var url = 'https://imidigital.imimobile.co/commonapi_stg/hungamastreaming.ashx?action=clip&cid=' + contentid + '&userid=' + userid + '&osid=' + osid + '&event=' + event + '&channel=wap&appid=mtn_afg';
+        $http.get(url).then(function (resp) {
+            var data = resp.data;
+            if (data == undefined || data == null) {
+                $('#pageloader').hide();
+                $('#fbstreamerror-modal').modal('show');
+                return false;
+            } else {
+                var url = '';
+                var trailer = data.trailer;
+                if (trailer == undefined) trailer = '';
+                if (trailer != '') {
+                    url = trailer.url;
+                    if (url == undefined) url = '';
+                    if (url == 'NA') url = '';
+                }
+                if (url != '') {
+
+                    //angular.element("#videoplayer")[0].src = url;
+                    $('#pageloader').hide();
+                    jwplayer("hungamaplayer").setup({
+                        sources: [{
+                            file: url
+                        }],
+                        androidhls: true,
+                        fallback: true,
+                        autostart: true,
+                        width: '100%'
+                    });
+
+                    $('#fbstreamplay-modal').on('hidden.bs.modal', function (e) {
+                        //document.getElementById("videoplayer").pause();
+                        jwplayer("hungamaplayer").stop();
+                    });
+
+                    $("#hungamaplayer").bind("contextmenu", function () {
+                        return false;
+                    });
+
+                    $('#fbstreamplay-modal').modal('show');
+                    return false;
+                } else {
+                    $('#pageloader').hide();
+                    $('#fbstreamerror-modal').modal('show');
+                    return false;
+                }
+            }
+        });
+    }
+
+    $scope.playVideo = function (content) {
+        var substatus = $('#evtshortzsubstatus').val();
+        if (substatus == undefined) substatus = '';
+        if (substatus == 'Y') {
+            var event = $('#hdnevent_hungamavideos2').val();
+            if (event == undefined) event = '';
+            var osid = $('#hdnosid').val();
+            if (osid == undefined) osid = '0';
+            if (osid == '') osid = '0';
+            var userid = $('#hdnencmobno').val();
+            if (userid == undefined) userid = '1';
+            if (userid == '!ENC_MOBNO!') userid = '1';
+            if (userid == '') userid = '1';
+            var contentid = content;
+            var url = 'https://imidigital.imimobile.co/commonapi/hungamastreaming.ashx?action=stream&cid=' + contentid + '&userid=' + userid + '&osid=' + osid + '&event=' + event + '&channel=wap&appid=mtn_afg';
+            $http.get(url).then(function (resp) {
+                var data = resp.data;
+                if (data == undefined || data == null) {
+                    $('#fbstreamerror-modal').modal('show');
+                    return false;
+                } else {
+                    var url = data.stream_url;
+                    if (url == undefined) url = '';
+                    if (url == 'NA') url = '';
+                    if (url != '') {
+
+                        //angular.element("#videoplayer")[0].src = url;
+
+                        jwplayer("hungamaplayer").setup({
+                            sources: [{
+                                file: url
+                            }],
+                            androidhls: true,
+                            fallback: true,
+                            autostart: true,
+                            width: '100%'
+                        });
+
+                        $('#fbstreamplay-modal').on('hidden.bs.modal', function (e) {
+                            //document.getElementById("videoplayer").pause();
+                            jwplayer("hungamaplayer").stop();
+                        });
+
+                        $("#hungamaplayer").bind("contextmenu", function () {
+                            return false;
+                        });
+
+                        $('#fbstreamplay-modal').modal('show');
+                        return false;
+                    } else {
+                        $('#fbstreamerror-modal').modal('show');
+                        return false;
+                    }
+                }
+            });
+
+        } else {
+            $('#fbstream-modal').modal('show');
+            return false;
+        }
+    }
+
+    $scope.getSwiperClass = function (id) { return id; }
+
+    $scope.pageCallBackApi();
+ 
 
     $scope.checkHideDiv = function (val, genreId) {
         if (val.length > 0) { $('#hungamaVideosLatest' + genreId).show(); }
